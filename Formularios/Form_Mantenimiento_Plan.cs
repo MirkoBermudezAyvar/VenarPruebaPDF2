@@ -15,6 +15,8 @@ using System.Data;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Configuration;
+using System.ComponentModel.DataAnnotations;
+using NPOI.SS.UserModel;
 
 namespace Prueba_pdf.Formularios
 {
@@ -55,6 +57,26 @@ namespace Prueba_pdf.Formularios
 
         }
 
+        private void LlenarComboTipodato()
+        {
+            string[] elementos = new string[] { "varchar", "int", "date" };
+            cbotipodato.Items.AddRange(elementos);
+            cbotipodato.SelectedIndex = 0;
+
+
+
+
+
+            cbotipodato.Visible = true;
+            //// Agregar un elemento adicional al ComboBox en el índice 0 con el texto deseado
+            //if (dt.Rows.Count > 0)
+            //{
+            //    // Establecer el índice seleccionado en 0
+            //    comboBox1.SelectedIndex = 0;
+            //}
+
+
+        }
 
 
         private void LLenardgtxCombo(string codcombo)
@@ -94,6 +116,7 @@ namespace Prueba_pdf.Formularios
                     }
                 }
             }
+
 
         }
 
@@ -192,7 +215,7 @@ namespace Prueba_pdf.Formularios
                     // Crear un nuevo formulario o panel y pasar el valor del ID
                     //OpcionesForm opcionesForm = new OpcionesForm(id);
                     //opcionesForm.Show();
-                    string des_sintildes = new string(des .Normalize(System.Text.NormalizationForm.FormD) .Where(c => System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark).ToArray());
+                    string des_sintildes = new string(des.Normalize(System.Text.NormalizationForm.FormD).Where(c => System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark).ToArray());
                     txtrecibeid.Text = id.ToString();
                     txtrecibeid.Enabled = false;
                     txtrecibedes.Text = des_sintildes;
@@ -204,29 +227,51 @@ namespace Prueba_pdf.Formularios
 
                 throw;
             }
-          
+            LlenarComboTipodato();
+
         }
 
         private void btnagregar_Click(object sender, EventArgs e)
         {
             string planillanom = txtrecibedes.Text;
+            string flaglongitud = "N";
+            string elementoSeleccionado = (string)cbotipodato.SelectedItem;
+            string nomcolum = txtnomcolumn.Text;
+            //Logica para determinar si tiene longitud
+            int longitud = 0;
+
+            if (!string.IsNullOrEmpty(txtlongitud.Text))
+            {
+                longitud = Convert.ToInt32(txtlongitud.Text);
+                int valorEntero;
+                if (int.TryParse(txtlongitud.Text, out valorEntero))
+                {
+                    longitud = Convert.ToInt32(txtlongitud.Text);
+                    flaglongitud = "S";
+
+
+                }
+            }
+
             bool validacion = false;
             //formación de tabla
             string tablaformada = "PL_" + planillanom;
-            string pkformada=tablaformada.ToLower() + "_id";
+            string pkformada = tablaformada.ToLower() + "_id";
             validacion = ValidacionTabla(tablaformada);
             if (validacion)
             {
-                CreacionTabla(tablaformada,pkformada);
-                //UpdateTable();
+                CreacionTabla(tablaformada, pkformada);
+                UpdateTable(nomcolum, elementoSeleccionado, longitud, tablaformada, flaglongitud);
             }
-            else {
-                //UpdateTable();
-              }
+            else
+            {
+                UpdateTable(nomcolum, elementoSeleccionado, longitud, tablaformada, flaglongitud);
+            }
 
         }
 
-        private bool ValidacionTabla(string tabla) {
+        private bool ValidacionTabla(string tabla)
+        {
             bool validacion = false;
             string tableName = tabla; // nombre de la tabla que se desea comprobar
             // Consulta SQL para comprobar si la tabla existe
@@ -259,7 +304,8 @@ namespace Prueba_pdf.Formularios
 
             return validacion;
         }
-        private void CreacionTabla(string nomtabla,string pk) {
+        private void CreacionTabla(string nomtabla, string pk)
+        {
 
             try
             {
@@ -275,19 +321,98 @@ namespace Prueba_pdf.Formularios
                         command.ExecuteNonQuery();
                     }
                 }
-              
+
             }
-            catch ( Exception ex) {
+            catch (Exception ex)
+            {
                 string detalle = string.Empty;
                 detalle = ex.Message;
 
             }
 
         }
-        private void UpdateTable() { }
+        private void UpdateTable(string nomcolum, string tipodato, int tamanio, string tablaformada, string flaglongitud)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
 
-      } 
+                string columnName = "pl_" + nomcolum;
+                string dataType = tipodato;
+                int length = tamanio;
+                if (flaglongitud == "N")
+                {
+                    string alterTableQuery = string.Format("ALTER TABLE {2} ADD {0} {1}", columnName, dataType, tablaformada);
+
+                    using (SqlCommand command = new SqlCommand(alterTableQuery, connection))
+                    {
+                        // Ejecuta la consulta
+                        int rowsAffected = command.ExecuteNonQuery();
+                        MessageBox.Show("La columna se agregó con éxito.");
+
+                    }
+                }
+                else
+                {
+                    if (dataType.ToLower() == "date")
+                    {
+                        length = -1; // Si el tipo de dato es un date, la longitud se establece en -1
+                    }
+
+                    string alterTableQuery = string.Format("ALTER TABLE {3} ADD {0} {1}{2}", columnName, dataType, length > 0 ? "(" + length + ")" : "", tablaformada);
+
+                    using (SqlCommand command = new SqlCommand(alterTableQuery, connection))
+                    {
+                        // Ejecuta la consulta
+                        int rowsAffected = command.ExecuteNonQuery();
+                        MessageBox.Show("La columna se agregó con éxito.");
+                    }
+                }
+            }
+        }
+
+        private void txtnomcolumn_KeyPress(object sender, KeyPressEventArgs e)
+        {
+
+        }
+
+        private void txtlongitud_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsDigit(e.KeyChar) && e.KeyChar != '\b' && e.KeyChar != '\u007f')
+            {
+                e.Handled = true;
+            }
+            else if (char.IsDigit(e.KeyChar))
+            {
+                int valor = int.Parse(txtlongitud.Text + e.KeyChar);
+                if (valor < 1 || valor > 255)
+                {
+                    e.Handled = true;
+                }
+            }
+
+        }
+
+        private void cbotipodato_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cbotipodato.SelectedIndex != 0)
+            {
+                txtlongitud.Visible = false;
+                //txtnomcolumn.Visible = false;
+                lbllongitud.Visible = false;
+                txtlongitud.Text = string.Empty;
+
+            }
+            else
+            {
+                txtlongitud.Visible = true;
+                //txtnomcolumn.Visible = true;
+                lbllongitud.Visible = true;
+            }
+        }
 
     }
+
+}
 
 

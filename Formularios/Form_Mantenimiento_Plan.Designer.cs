@@ -38,16 +38,19 @@
             pnlmetadatos = new Panel();
             cbotipodato = new ComboBox();
             label7 = new Label();
-            label6 = new Label();
+            lbllongitud = new Label();
             txtlongitud = new TextBox();
             txtnomcolumn = new TextBox();
-            label5 = new Label();
+            lblnomcolum = new Label();
             label4 = new Label();
             txtrecibedes = new TextBox();
             txtrecibeid = new TextBox();
             btnagregar = new Button();
+            sqlCommand1 = new Microsoft.Data.SqlClient.SqlCommand();
+            dataGridView1 = new DataGridView();
             ((System.ComponentModel.ISupportInitialize)dgvListaPlantillas).BeginInit();
             pnlmetadatos.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
             // comboBox1
@@ -121,14 +124,14 @@
             // 
             pnlmetadatos.Controls.Add(cbotipodato);
             pnlmetadatos.Controls.Add(label7);
-            pnlmetadatos.Controls.Add(label6);
+            pnlmetadatos.Controls.Add(lbllongitud);
             pnlmetadatos.Controls.Add(txtlongitud);
             pnlmetadatos.Controls.Add(txtnomcolumn);
-            pnlmetadatos.Controls.Add(label5);
+            pnlmetadatos.Controls.Add(lblnomcolum);
             pnlmetadatos.Controls.Add(label4);
             pnlmetadatos.Controls.Add(txtrecibedes);
             pnlmetadatos.Controls.Add(txtrecibeid);
-            pnlmetadatos.Location = new Point(566, 44);
+            pnlmetadatos.Location = new Point(322, 53);
             pnlmetadatos.Name = "pnlmetadatos";
             pnlmetadatos.Size = new Size(574, 358);
             pnlmetadatos.TabIndex = 8;
@@ -138,8 +141,10 @@
             cbotipodato.FormattingEnabled = true;
             cbotipodato.Location = new Point(15, 193);
             cbotipodato.Name = "cbotipodato";
-            cbotipodato.Size = new Size(202, 23);
+            cbotipodato.Size = new Size(223, 23);
             cbotipodato.TabIndex = 8;
+            cbotipodato.Visible = false;
+            cbotipodato.SelectedIndexChanged += cbotipodato_SelectedIndexChanged;
             // 
             // label7
             // 
@@ -150,37 +155,39 @@
             label7.TabIndex = 7;
             label7.Text = "Tipo de dato";
             // 
-            // label6
+            // lbllongitud
             // 
-            label6.AutoSize = true;
-            label6.Location = new Point(21, 235);
-            label6.Name = "label6";
-            label6.Size = new Size(52, 15);
-            label6.TabIndex = 6;
-            label6.Text = "longitud";
+            lbllongitud.AutoSize = true;
+            lbllongitud.Location = new Point(21, 235);
+            lbllongitud.Name = "lbllongitud";
+            lbllongitud.Size = new Size(55, 15);
+            lbllongitud.TabIndex = 6;
+            lbllongitud.Text = "Longitud";
             // 
             // txtlongitud
             // 
-            txtlongitud.Location = new Point(18, 263);
+            txtlongitud.Location = new Point(15, 263);
             txtlongitud.Name = "txtlongitud";
             txtlongitud.Size = new Size(223, 23);
             txtlongitud.TabIndex = 5;
+            txtlongitud.KeyPress += txtlongitud_KeyPress;
             // 
             // txtnomcolumn
             // 
             txtnomcolumn.Location = new Point(15, 128);
             txtnomcolumn.Name = "txtnomcolumn";
-            txtnomcolumn.Size = new Size(208, 23);
+            txtnomcolumn.Size = new Size(223, 23);
             txtnomcolumn.TabIndex = 4;
+            txtnomcolumn.KeyPress += txtnomcolumn_KeyPress;
             // 
-            // label5
+            // lblnomcolum
             // 
-            label5.AutoSize = true;
-            label5.Location = new Point(15, 110);
-            label5.Name = "label5";
-            label5.Size = new Size(117, 15);
-            label5.TabIndex = 3;
-            label5.Text = "Nombre de columna";
+            lblnomcolum.AutoSize = true;
+            lblnomcolum.Location = new Point(15, 110);
+            lblnomcolum.Name = "lblnomcolum";
+            lblnomcolum.Size = new Size(117, 15);
+            lblnomcolum.TabIndex = 3;
+            lblnomcolum.Text = "Nombre de columna";
             // 
             // label4
             // 
@@ -193,21 +200,23 @@
             // 
             // txtrecibedes
             // 
-            txtrecibedes.Location = new Point(76, 52);
+            txtrecibedes.Location = new Point(70, 52);
             txtrecibedes.Name = "txtrecibedes";
-            txtrecibedes.Size = new Size(185, 23);
+            txtrecibedes.Size = new Size(168, 23);
             txtrecibedes.TabIndex = 1;
             // 
             // txtrecibeid
             // 
+            txtrecibeid.Enabled = false;
             txtrecibeid.Location = new Point(76, 13);
             txtrecibeid.Name = "txtrecibeid";
             txtrecibeid.Size = new Size(100, 23);
             txtrecibeid.TabIndex = 0;
+            txtrecibeid.Visible = false;
             // 
             // btnagregar
             // 
-            btnagregar.Location = new Point(984, 15);
+            btnagregar.Location = new Point(749, 24);
             btnagregar.Name = "btnagregar";
             btnagregar.Size = new Size(75, 23);
             btnagregar.TabIndex = 9;
@@ -215,11 +224,26 @@
             btnagregar.UseVisualStyleBackColor = true;
             btnagregar.Click += btnagregar_Click;
             // 
+            // sqlCommand1
+            // 
+            sqlCommand1.CommandTimeout = 30;
+            sqlCommand1.EnableOptimizedParameterBinding = false;
+            // 
+            // dataGridView1
+            // 
+            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridView1.Location = new Point(938, 53);
+            dataGridView1.Name = "dataGridView1";
+            dataGridView1.RowTemplate.Height = 25;
+            dataGridView1.Size = new Size(317, 358);
+            dataGridView1.TabIndex = 10;
+            // 
             // Form_Mantenimiento_Plan
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1290, 450);
+            Controls.Add(dataGridView1);
             Controls.Add(btnagregar);
             Controls.Add(pnlmetadatos);
             Controls.Add(dgvListaPlantillas);
@@ -234,6 +258,7 @@
             ((System.ComponentModel.ISupportInitialize)dgvListaPlantillas).EndInit();
             pnlmetadatos.ResumeLayout(false);
             pnlmetadatos.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -254,9 +279,11 @@
         private TextBox txtrecibedes;
         private ComboBox cbotipodato;
         private Label label7;
-        private Label label6;
+        private Label lbllongitud;
         private TextBox txtlongitud;
         private TextBox txtnomcolumn;
-        private Label label5;
+        private Label lblnomcolum;
+        private Microsoft.Data.SqlClient.SqlCommand sqlCommand1;
+        private DataGridView dataGridView1;
     }
 }
