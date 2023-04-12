@@ -28,6 +28,52 @@ namespace Prueba_pdf.Formularios
             InitializeComponent();
             LlenarCombo();
             LlenarActualizarDGVPlantillas();
+
+
+            //dgAtributos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
+            //dgAtributos.ColumnHeadersHeight = 50;
+            //dgAtributos.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCellsExceptHeader;
+        }
+
+        private void LlenarAtributos(string nombre)
+        {
+            try
+            {
+                // Consulta para obtener los datos de la tabla
+                string query = "SELECT  * from PL_" + nombre;
+
+                // Crear una conexión a la base de datos
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    // Crear un comando para ejecutar la consulta
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        // Abrir la conexión a la base de datos
+                        connection.Open();
+
+                        // Crear un DataAdapter para obtener los datos de la tabla
+                        using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                        {
+                            // Crear un DataTable para almacenar los datos de la tabla
+                            DataTable dataTable = new DataTable();
+
+                            // Llenar el DataTable con los datos de la tabla
+                            adapter.Fill(dataTable);
+
+                            // Asignar el DataTable al DataGridView
+                            dgAtributos.DataSource = dataTable;
+                        }
+                    }
+                }
+                dgAtributos.Refresh();
+                //dgvListaPlantillas.Columns["plani_id"].Visible = false;
+                //txtnomplantilla.Text = string.Empty;
+            }
+            catch (Exception ex)
+            {
+
+            }
+
         }
 
         private void LlenarCombo()
@@ -200,17 +246,19 @@ namespace Prueba_pdf.Formularios
             dgvListaPlantillas.Columns["plani_id"].Visible = false;
             txtnomplantilla.Text = string.Empty;
 
+
         }
 
         private void dgvListaPlantillas_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+            string des = string.Empty;
             try
             {
                 if (e.RowIndex >= 0)
                 {
                     DataGridViewRow row = this.dgvListaPlantillas.Rows[e.RowIndex];
                     int id = Convert.ToInt32(row.Cells["plani_id"].Value);
-                    string des = Convert.ToString(row.Cells["Plantillas"].Value);
+                    des = Convert.ToString(row.Cells["Plantillas"].Value);
 
                     // Crear un nuevo formulario o panel y pasar el valor del ID
                     //OpcionesForm opcionesForm = new OpcionesForm(id);
@@ -228,6 +276,8 @@ namespace Prueba_pdf.Formularios
                 throw;
             }
             LlenarComboTipodato();
+            string des_sintildesx = new string(des.Normalize(System.Text.NormalizationForm.FormD).Where(c => System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark).ToArray());
+            LlenarAtributos(des_sintildesx);
 
         }
 
@@ -411,6 +461,19 @@ namespace Prueba_pdf.Formularios
             }
         }
 
+        private void dgAtributos_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+            //{ // Vertical text from column 0, or adjust below, if first column(s) to be skipped
+            //    if (e.RowIndex == -1 && e.ColumnIndex >= 0)
+            //    {
+            //        e.PaintBackground(e.CellBounds, true);
+            //        e.Graphics.TranslateTransform(e.CellBounds.Left, e.CellBounds.Bottom);
+            //        e.Graphics.RotateTransform(360);
+            //        e.Graphics.DrawString(e.FormattedValue.ToString(), e.CellStyle.Font, Brushes.Black, 5, 5);
+            //        e.Graphics.ResetTransform();
+            //        e.Handled = true;
+            //    }
+        }
     }
 
 }

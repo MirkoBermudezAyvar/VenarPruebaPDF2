@@ -1,4 +1,6 @@
-﻿namespace Prueba_pdf.Formularios
+﻿using System.Windows.Forms;
+
+namespace Prueba_pdf.Formularios
 {
     partial class Form_Mantenimiento_Plan
     {
@@ -47,10 +49,10 @@
             txtrecibeid = new TextBox();
             btnagregar = new Button();
             sqlCommand1 = new Microsoft.Data.SqlClient.SqlCommand();
-            dataGridView1 = new DataGridView();
+            dgAtributos = new DataGridView();
             ((System.ComponentModel.ISupportInitialize)dgvListaPlantillas).BeginInit();
             pnlmetadatos.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dgAtributos).BeginInit();
             SuspendLayout();
             // 
             // comboBox1
@@ -111,6 +113,7 @@
             // 
             // dgvListaPlantillas
             // 
+            dgvListaPlantillas.AllowUserToAddRows = false;
             dgvListaPlantillas.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvListaPlantillas.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvListaPlantillas.Location = new Point(12, 96);
@@ -229,21 +232,22 @@
             sqlCommand1.CommandTimeout = 30;
             sqlCommand1.EnableOptimizedParameterBinding = false;
             // 
-            // dataGridView1
+            // dgAtributos
             // 
-            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(938, 53);
-            dataGridView1.Name = "dataGridView1";
-            dataGridView1.RowTemplate.Height = 25;
-            dataGridView1.Size = new Size(317, 358);
-            dataGridView1.TabIndex = 10;
+            dgAtributos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgAtributos.Location = new Point(911, 105);
+            dgAtributos.Name = "dgAtributos";
+            dgAtributos.RowTemplate.Height = 25;
+            dgAtributos.Size = new Size(343, 92);
+            dgAtributos.TabIndex = 10;
+            dgAtributos.CellPainting += dgAtributos_CellPainting;
             // 
             // Form_Mantenimiento_Plan
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1290, 450);
-            Controls.Add(dataGridView1);
+            Controls.Add(dgAtributos);
             Controls.Add(btnagregar);
             Controls.Add(pnlmetadatos);
             Controls.Add(dgvListaPlantillas);
@@ -258,7 +262,7 @@
             ((System.ComponentModel.ISupportInitialize)dgvListaPlantillas).EndInit();
             pnlmetadatos.ResumeLayout(false);
             pnlmetadatos.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgAtributos).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -284,6 +288,6 @@
         private TextBox txtnomcolumn;
         private Label lblnomcolum;
         private Microsoft.Data.SqlClient.SqlCommand sqlCommand1;
-        private DataGridView dataGridView1;
+        private DataGridView dgAtributos;
     }
 }
