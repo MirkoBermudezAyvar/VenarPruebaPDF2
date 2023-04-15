@@ -18,6 +18,7 @@ using System.Configuration;
 using System.ComponentModel.DataAnnotations;
 
 
+
 namespace Prueba_pdf.Formularios
 {
     public partial class Form_Mantenimiento_Plan : Form
@@ -26,10 +27,10 @@ namespace Prueba_pdf.Formularios
         public Form_Mantenimiento_Plan()
         {
             InitializeComponent();
-            LlenarCombo();
             LlenarActualizarDGVPlantillas();
             LlenarComboTipodato();
             OcultarCampos();
+
 
             //dgAtributos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
             //dgAtributos.ColumnHeadersHeight = 50;
@@ -88,43 +89,14 @@ namespace Prueba_pdf.Formularios
         }
 
 
-        private void LlenarCombo()
-        {
 
 
-            string query = "SELECT * FROM PlantillaPDF";
-            DataTable dt = new DataTable();
-            using (SqlConnection conexion = new SqlConnection(connectionString))
-            {
-                using (SqlDataAdapter adapter = new SqlDataAdapter(query, conexion))
-                {
-                    adapter.Fill(dt);
-                }
-            }
-
-            comboBox1.DataSource = dt;
-            comboBox1.DisplayMember = "planv_des";
-            comboBox1.ValueMember = "plani_id";
-            // Agregar un elemento adicional al ComboBox en el índice 0 con el texto deseado
-            if (dt.Rows.Count > 0)
-            {
-                // Establecer el índice seleccionado en 0
-                comboBox1.SelectedIndex = 0;
-            }
-
-
-        }
 
         private void LlenarComboTipodato()
         {
             string[] elementos = new string[] { "varchar", "int", "date" };
             cbotipodato.Items.AddRange(elementos);
             cbotipodato.SelectedIndex = 0;
-
-
-
-
-
             cbotipodato.Visible = true;
             //// Agregar un elemento adicional al ComboBox en el índice 0 con el texto deseado
             //if (dt.Rows.Count > 0)
@@ -178,25 +150,6 @@ namespace Prueba_pdf.Formularios
 
         }
 
-        private void comboBox1_SelectedIndexChanged_1(object sender, EventArgs e)
-        {
-            try
-            {
-
-                if (comboBox1.SelectedIndex != -1)
-                {
-                    string filtro = comboBox1.SelectedValue.ToString();
-                    LLenardgtxCombo(filtro);
-                }
-            }
-            catch (Exception)
-            {
-
-
-            }
-
-
-        }
 
         private void label3_Click(object sender, EventArgs e)
         {
@@ -205,24 +158,6 @@ namespace Prueba_pdf.Formularios
 
         private void button1_Click(object sender, EventArgs e)
         {
-            // Obtener los valores a insertar desde los controles del formulario
-            string nomplantilla = txtnomplantilla.Text;
-            // query de insercción 
-            string sql = "INSERT INTO PlantillaPDF (planv_des) VALUES (@nomplantilla)";
-            // Crear la conexión y el comando de inserción
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            using (SqlCommand command = new SqlCommand(sql, connection))
-            {
-                // Agregar los parámetros de consulta
-                command.Parameters.AddWithValue("@nomplantilla", nomplantilla);
-
-                // Abrir la conexión y ejecutar la consulta
-                connection.Open();
-                command.ExecuteNonQuery();
-            }
-
-            // Actualizar la vista del DataGridView
-            LlenarActualizarDGVPlantillas();
 
         }
 
@@ -263,74 +198,148 @@ namespace Prueba_pdf.Formularios
 
         private void dgvListaPlantillas_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            string des = string.Empty;
-            try
-            {
-                if (e.RowIndex >= 0)
-                {
-                    DataGridViewRow row = this.dgvListaPlantillas.Rows[e.RowIndex];
-                    int id = Convert.ToInt32(row.Cells["plani_id"].Value);
-                    des = Convert.ToString(row.Cells["Plantillas"].Value);
+            bool bandera = false;
+            DataGridViewRow row = this.dgvListaPlantillas.Rows[e.RowIndex];
+            string tabla = Convert.ToString(row.Cells["Plantillas"].Value);
+            string tabla_sintildes = new string(tabla.Normalize(System.Text.NormalizationForm.FormD).Where(c => System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark).ToArray());
 
-                    // Crear un nuevo formulario o panel y pasar el valor del ID
-                    //OpcionesForm opcionesForm = new OpcionesForm(id);
-                    //opcionesForm.Show();
-                    string des_sintildes = new string(des.Normalize(System.Text.NormalizationForm.FormD).Where(c => System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark).ToArray());
-                    txtrecibeid.Text = id.ToString();
-                    txtrecibeid.Enabled = false;
-                    txtrecibedes.Text = des_sintildes;
-                    txtrecibedes.Enabled = false;
+            bool validaciontabla = ValidacionTabla("PL_" + tabla_sintildes);
+            if (e.ColumnIndex == dgvListaPlantillas.Columns["Eliminar"].Index && e.RowIndex >= 0)
+            {
+                if (!validaciontabla)
+                {
+                    // Mostrar un mensaje de confirmación
+                    DialogResult result = MessageBox.Show("¿Está seguro de que desea eliminar este registro, ya contiene la tabla?", "Confirmar eliminación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                    // Si el usuario hace clic en Sí, eliminar el registro de la base de datos
+                    if (result == DialogResult.Yes)
+                    {
+
+                        int id = Convert.ToInt32(dgvListaPlantillas.Rows[e.RowIndex].Cells["plani_id"].Value);
+                        string query = "DELETE FROM PlantillaPDF WHERE plani_id = @id";
+                        using (SqlConnection conn = new SqlConnection(connectionString))
+                        using (SqlCommand cmd = new SqlCommand(query, conn))
+                        {
+                            cmd.Parameters.AddWithValue("@id", id);
+                            conn.Open();
+                            cmd.ExecuteNonQuery();
+                        }
+                        //Eliminado la tabla
+                        string query2 = "DROP TABLE " + "PL_" + tabla_sintildes;
+                        using (SqlConnection conn = new SqlConnection(connectionString))
+                        using (SqlCommand cmd = new SqlCommand(query2, conn))
+                        {
+                            //cmd.Parameters.AddWithValue("@id", id);
+                            conn.Open();
+                            cmd.ExecuteNonQuery();
+                        }
+                        dgvListaPlantillas.Rows.RemoveAt(e.RowIndex);
+                        bandera = true;
+                        OcultarCampos();
+
+                    }
+
+                }
+
+                else
+                {
+                    int id = Convert.ToInt32(dgvListaPlantillas.Rows[e.RowIndex].Cells["plani_id"].Value);
+                    string query = "DELETE FROM PlantillaPDF WHERE plani_id = @id";
+                    using (SqlConnection conn = new SqlConnection(connectionString))
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@id", id);
+                        conn.Open();
+                        cmd.ExecuteNonQuery();
+                    }
+                    bandera = true;
+                    MessageBox.Show("Se eliminó satisfactoriamente el elemento");
                 }
             }
-            catch (Exception)
+            if (!bandera)
             {
+                string des = string.Empty;
+                try
+                {
+                    if (e.RowIndex >= 0)
+                    {
+                        DataGridViewRow row2 = this.dgvListaPlantillas.Rows[e.RowIndex];
+                        int id = Convert.ToInt32(row2.Cells["plani_id"].Value);
+                        des = Convert.ToString(row2.Cells["Plantillas"].Value);
 
-                throw;
+                        // Crear un nuevo formulario o panel y pasar el valor del ID
+                        //OpcionesForm opcionesForm = new OpcionesForm(id);
+                        //opcionesForm.Show();
+                        string des_sintildes = new string(des.Normalize(System.Text.NormalizationForm.FormD).Where(c => System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark).ToArray());
+                        txtrecibeid.Text = id.ToString();
+                        txtrecibeid.Enabled = false;
+                        txtrecibedes.Text = des_sintildes;
+                        txtrecibedes.Enabled = false;
+                    }
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+                MostrarCampos();
+
+                string des_sintildesx = new string(des.Normalize(System.Text.NormalizationForm.FormD).Where(c => System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark).ToArray());
+                LlenarAtributos(des_sintildesx);
             }
-            MostrarCampos();
-
-            string des_sintildesx = new string(des.Normalize(System.Text.NormalizationForm.FormD).Where(c => System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark).ToArray());
-            LlenarAtributos(des_sintildesx);
-
+            LlenarActualizarDGVPlantillas();
+            dgvListaPlantillas.Refresh();
         }
 
         private void btnagregar_Click(object sender, EventArgs e)
         {
-            string planillanom = txtrecibedes.Text;
-            string flaglongitud = "N";
-            string elementoSeleccionado = (string)cbotipodato.SelectedItem;
-            string nomcolum = txtnomcolumn.Text;
-            //Logica para determinar si tiene longitud
-            int longitud = 0;
-
-            if (!string.IsNullOrEmpty(txtlongitud.Text))
+            bool validacion_campos = true;
+            validacion_campos = ValidarcamposAtributos();
+            if (!validacion_campos)
             {
-                longitud = Convert.ToInt32(txtlongitud.Text);
-                int valorEntero;
-                if (int.TryParse(txtlongitud.Text, out valorEntero))
+                string planillanom = txtrecibedes.Text;
+                string flaglongitud = "N";
+                string elementoSeleccionado = (string)cbotipodato.SelectedItem;
+                string nomcolum = txtnomcolumn.Text;
+                //Logica para determinar si tiene longitud
+                int longitud = 0;
+
+                if (!string.IsNullOrEmpty(txtlongitud.Text))
                 {
                     longitud = Convert.ToInt32(txtlongitud.Text);
-                    flaglongitud = "S";
+                    int valorEntero;
+                    if (int.TryParse(txtlongitud.Text, out valorEntero))
+                    {
+                        longitud = Convert.ToInt32(txtlongitud.Text);
+                        flaglongitud = "S";
 
 
+                    }
                 }
-            }
 
-            bool validacion = false;
-            //formación de tabla
-            string tablaformada = "PL_" + planillanom;
-            string pkformada = tablaformada.ToLower() + "_id";
-            validacion = ValidacionTabla(tablaformada);
-            if (validacion)
-            {
-                CreacionTabla(tablaformada, pkformada);
-                UpdateTable(nomcolum, elementoSeleccionado, longitud, tablaformada, flaglongitud);
+                bool validacion = false;
+                //formación de tabla
+                string tablaformada = "PL_" + planillanom;
+                string pkformada = tablaformada.ToLower() + "_id";
+                validacion = ValidacionTabla(tablaformada);
+                if (validacion)
+                {
+                    CreacionTabla(tablaformada, pkformada);
+                    UpdateTable(nomcolum, elementoSeleccionado, longitud, tablaformada, flaglongitud);
+                    LlenarAtributos(planillanom);
+                    LimpiarAtributos();
+                }
+                else
+                {
+                    UpdateTable(nomcolum, elementoSeleccionado, longitud, tablaformada, flaglongitud);
+                    LlenarAtributos(planillanom);
+                    LimpiarAtributos();
+                }
             }
             else
             {
-                UpdateTable(nomcolum, elementoSeleccionado, longitud, tablaformada, flaglongitud);
+                MessageBox.Show("No pueden haber campos vacíos");
             }
-
         }
 
         private bool ValidacionTabla(string tabla)
@@ -456,36 +465,20 @@ namespace Prueba_pdf.Formularios
 
         }
 
-        private void cbotipodato_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (cbotipodato.SelectedIndex != 0)
-            {
-                txtlongitud.Visible = false;
-                //txtnomcolumn.Visible = false;
-                lbllongitud.Visible = false;
-                txtlongitud.Text = string.Empty;
 
-            }
-            else
-            {
-                txtlongitud.Visible = true;
-                //txtnomcolumn.Visible = true;
-                lbllongitud.Visible = true;
-            }
-        }
 
         private void dgAtributos_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
-            //{ // Vertical text from column 0, or adjust below, if first column(s) to be skipped
-            //    if (e.RowIndex == -1 && e.ColumnIndex >= 0)
-            //    {
-            //        e.PaintBackground(e.CellBounds, true);
-            //        e.Graphics.TranslateTransform(e.CellBounds.Left, e.CellBounds.Bottom);
-            //        e.Graphics.RotateTransform(360);
-            //        e.Graphics.DrawString(e.FormattedValue.ToString(), e.CellStyle.Font, Brushes.Black, 5, 5);
-            //        e.Graphics.ResetTransform();
-            //        e.Handled = true;
-            //    }
+            if (e.ColumnIndex == dgAtributos.Columns["EliminarA"].Index && e.RowIndex >= 0)
+            {
+                e.Paint(e.CellBounds, DataGridViewPaintParts.All);
+                var icon = Recursos.icons8_eliminar_261; // cambie 'DeleteIcon' con el nombre del icono que desea utilizar
+                var x = e.CellBounds.Left + (e.CellBounds.Width - icon.Width) / 2;
+                var y = e.CellBounds.Top + (e.CellBounds.Height - icon.Height) / 2;
+                e.Graphics.DrawImage(icon, new Point(x, y));
+                e.Handled = true;
+            }
+
         }
 
         private void OcultarCampos()
@@ -520,6 +513,113 @@ namespace Prueba_pdf.Formularios
             txtlongitud.Show();
             btnagregar.Show();
             dgAtributos.Show();
+        }
+
+        private void LimpiarAtributos()
+        {
+            txtlongitud.Text = "";
+            txtnomcolumn.Text = "";
+            cbotipodato.SelectedIndex = 0;
+        }
+
+        private void btnAgregarPlantilla_Click(object sender, EventArgs e)
+        {
+            // Obtener los valores a insertar desde los controles del formulario
+            string nomplantilla = txtnomplantilla.Text;
+            // query de insercción 
+            string sql = "INSERT INTO PlantillaPDF (planv_des) VALUES (@nomplantilla)";
+            // Crear la conexión y el comando de inserción
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = new SqlCommand(sql, connection))
+            {
+                // Agregar los parámetros de consulta
+                command.Parameters.AddWithValue("@nomplantilla", nomplantilla);
+
+                // Abrir la conexión y ejecutar la consulta
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+
+            // Actualizar la vista del DataGridView
+            LlenarActualizarDGVPlantillas();
+
+        }
+
+
+
+        private void btnAgregar_Plan_Click(object sender, EventArgs e)
+        {
+            // Obtener los valores a insertar desde los controles del formulario
+            string nomplantilla = txtnomplantilla.Text;
+            // query de insercción 
+            string sql = "INSERT INTO PlantillaPDF (planv_des) VALUES (@nomplantilla)";
+            // Crear la conexión y el comando de inserción
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = new SqlCommand(sql, connection))
+            {
+                // Agregar los parámetros de consulta
+                command.Parameters.AddWithValue("@nomplantilla", nomplantilla);
+
+                // Abrir la conexión y ejecutar la consulta
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+
+            // Actualizar la vista del DataGridView
+            LlenarActualizarDGVPlantillas();
+        }
+
+        private void cbotipodato_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cbotipodato.SelectedIndex != 0)
+            {
+                txtlongitud.Visible = false;
+                //txtnomcolumn.Visible = false;
+                lbllongitud.Visible = false;
+                txtlongitud.Text = string.Empty;
+
+            }
+            else
+            {
+                txtlongitud.Visible = true;
+                //txtnomcolumn.Visible = true;
+                lbllongitud.Visible = true;
+            }
+
+        }
+
+        private void dgvListaPlantillas_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+
+            if (e.ColumnIndex == dgvListaPlantillas.Columns["Eliminar"].Index && e.RowIndex >= 0)
+            {
+                e.Paint(e.CellBounds, DataGridViewPaintParts.All);
+                var icon = Recursos.icons8_eliminar_261; // cambie 'DeleteIcon' con el nombre del icono que desea utilizar
+                var x = e.CellBounds.Left + (e.CellBounds.Width - icon.Width) / 2;
+                var y = e.CellBounds.Top + (e.CellBounds.Height - icon.Height) / 2;
+                e.Graphics.DrawImage(icon, new Point(x, y));
+                e.Handled = true;
+            }
+        }
+
+        private bool ValidarcamposAtributos()
+        {
+            bool camposvacios = false;
+            if (cbotipodato.SelectedIndex != 0)
+            {
+                if (txtnomcolumn.Text == string.Empty)
+                {
+                    camposvacios = true;
+                }
+
+            }
+
+            else if (txtlongitud.Text == string.Empty || txtnomcolumn.Text == string.Empty)
+            {
+                camposvacios = true;
+            }
+
+            return camposvacios;
         }
     }
 

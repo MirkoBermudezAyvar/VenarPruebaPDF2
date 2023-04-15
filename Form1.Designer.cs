@@ -47,7 +47,6 @@
             ventanasToolStripMenuItem = new ToolStripMenuItem();
             statusStrip1 = new StatusStrip();
             toolStripProgressBar1 = new ToolStripProgressBar();
-            toolStripContainer1 = new ToolStripContainer();
             printDialog1 = new PrintDialog();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             openFileDialog1 = new OpenFileDialog();
@@ -55,12 +54,9 @@
             process1 = new System.Diagnostics.Process();
             openFileDialog2 = new OpenFileDialog();
             bindingSource1 = new BindingSource(components);
-            treeView1 = new TreeView();
-            listView1 = new ListView();
             contextMenuStrip1.SuspendLayout();
             menuStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
-            toolStripContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)bindingSource1).BeginInit();
             SuspendLayout();
             // 
@@ -183,18 +179,6 @@
             toolStripProgressBar1.Name = "toolStripProgressBar1";
             toolStripProgressBar1.Size = new Size(100, 16);
             // 
-            // toolStripContainer1
-            // 
-            // 
-            // toolStripContainer1.ContentPanel
-            // 
-            toolStripContainer1.ContentPanel.Size = new Size(150, 150);
-            toolStripContainer1.Location = new Point(0, 85);
-            toolStripContainer1.Name = "toolStripContainer1";
-            toolStripContainer1.Size = new Size(150, 175);
-            toolStripContainer1.TabIndex = 3;
-            toolStripContainer1.Text = "toolStripContainer1";
-            // 
             // printDialog1
             // 
             printDialog1.UseEXDialog = true;
@@ -224,31 +208,11 @@
             // 
             openFileDialog2.FileName = "openFileDialog2";
             // 
-            // treeView1
-            // 
-            treeView1.Location = new Point(153, 85);
-            treeView1.Name = "treeView1";
-            treeView1.Size = new Size(319, 372);
-            treeView1.TabIndex = 8;
-            treeView1.AfterSelect += treeView1_AfterSelect;
-            // 
-            // listView1
-            // 
-            listView1.Location = new Point(478, 85);
-            listView1.Name = "listView1";
-            listView1.Size = new Size(989, 294);
-            listView1.TabIndex = 9;
-            listView1.UseCompatibleStateImageBehavior = false;
-            listView1.ItemActivate += listView1_ItemActivate_1;
-            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1600, 592);
-            Controls.Add(listView1);
-            Controls.Add(treeView1);
-            Controls.Add(toolStripContainer1);
             Controls.Add(statusStrip1);
             Controls.Add(menuStrip1);
             MainMenuStrip = menuStrip1;
@@ -259,8 +223,6 @@
             menuStrip1.PerformLayout();
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();
-            toolStripContainer1.ResumeLayout(false);
-            toolStripContainer1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)bindingSource1).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -280,7 +242,6 @@
         private ToolStripMenuItem toolStripMenuItem1;
         private StatusStrip statusStrip1;
         private ToolStripProgressBar toolStripProgressBar1;
-        private ToolStripContainer toolStripContainer1;
         private PrintDialog printDialog1;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private OpenFileDialog openFileDialog1;
@@ -288,10 +249,8 @@
         private System.Diagnostics.Process process1;
         private OpenFileDialog openFileDialog2;
         private BindingSource bindingSource1;
-        private TreeView treeView1;
         private ToolStripMenuItem documentosToolStripMenuItem;
         private ToolStripMenuItem ventanasToolStripMenuItem;
-        private ListView listView1;
         private ToolStripMenuItem mantenimientoDePlantillasToolStripMenuItem;
         private ToolStripMenuItem mantenimientoDeUsuariosToolStripMenuItem;
         private ToolStripMenuItem cerrarSesiónToolStripMenuItem;
