@@ -16,7 +16,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Configuration;
 using System.ComponentModel.DataAnnotations;
-using NPOI.SS.UserModel;
+
 
 namespace Prueba_pdf.Formularios
 {
@@ -28,7 +28,8 @@ namespace Prueba_pdf.Formularios
             InitializeComponent();
             LlenarCombo();
             LlenarActualizarDGVPlantillas();
-
+            LlenarComboTipodato();
+            OcultarCampos();
 
             //dgAtributos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
             //dgAtributos.ColumnHeadersHeight = 50;
@@ -37,44 +38,55 @@ namespace Prueba_pdf.Formularios
 
         private void LlenarAtributos(string nombre)
         {
-            try
+            bool validaciontabla = ValidacionTabla("PL_" + nombre);
+
+            if (!validaciontabla)
             {
-                // Consulta para obtener los datos de la tabla
-                string query = "SELECT  * from PL_" + nombre;
-
-                // Crear una conexión a la base de datos
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                try
                 {
-                    // Crear un comando para ejecutar la consulta
-                    using (SqlCommand command = new SqlCommand(query, connection))
+                    // Consulta para obtener los datos de la tabla
+                    string query = "SELECT  * from PL_" + nombre;
+
+                    // Crear una conexión a la base de datos
+                    using (SqlConnection connection = new SqlConnection(connectionString))
                     {
-                        // Abrir la conexión a la base de datos
-                        connection.Open();
-
-                        // Crear un DataAdapter para obtener los datos de la tabla
-                        using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                        // Crear un comando para ejecutar la consulta
+                        using (SqlCommand command = new SqlCommand(query, connection))
                         {
-                            // Crear un DataTable para almacenar los datos de la tabla
-                            DataTable dataTable = new DataTable();
+                            // Abrir la conexión a la base de datos
+                            connection.Open();
 
-                            // Llenar el DataTable con los datos de la tabla
-                            adapter.Fill(dataTable);
+                            // Crear un DataAdapter para obtener los datos de la tabla
+                            using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                            {
+                                // Crear un DataTable para almacenar los datos de la tabla
+                                System.Data.DataTable dataTable = new System.Data.DataTable();
 
-                            // Asignar el DataTable al DataGridView
-                            dgAtributos.DataSource = dataTable;
+                                // Llenar el DataTable con los datos de la tabla
+                                adapter.Fill(dataTable);
+
+                                // Asignar el DataTable al DataGridView
+                                dgAtributos.DataSource = dataTable;
+                            }
                         }
                     }
+                    dgAtributos.Refresh();
+                    //dgvListaPlantillas.Columns["plani_id"].Visible = false;
+                    //txtnomplantilla.Text = string.Empty;
                 }
-                dgAtributos.Refresh();
-                //dgvListaPlantillas.Columns["plani_id"].Visible = false;
-                //txtnomplantilla.Text = string.Empty;
-            }
-            catch (Exception ex)
-            {
 
+                catch (Exception ex)
+                {
+
+                }
+            }
+            else
+            {
+                dgAtributos.DataSource = "";
             }
 
         }
+
 
         private void LlenarCombo()
         {
@@ -275,7 +287,8 @@ namespace Prueba_pdf.Formularios
 
                 throw;
             }
-            LlenarComboTipodato();
+            MostrarCampos();
+
             string des_sintildesx = new string(des.Normalize(System.Text.NormalizationForm.FormD).Where(c => System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark).ToArray());
             LlenarAtributos(des_sintildesx);
 
@@ -473,6 +486,40 @@ namespace Prueba_pdf.Formularios
             //        e.Graphics.ResetTransform();
             //        e.Handled = true;
             //    }
+        }
+
+        private void OcultarCampos()
+        {
+
+            txtrecibeid.Hide();
+            lblplantilla.Hide();
+            txtrecibedes.Hide();
+            lblnomcolum.Hide();
+            txtnomcolumn.Hide();
+            lbltipodato.Hide();
+            cbotipodato.Hide();
+            lbllongitud.Hide();
+            txtlongitud.Hide();
+            btnagregar.Hide();
+            dgAtributos.Hide();
+
+        }
+
+
+        private void MostrarCampos()
+        {
+
+            //txtrecibeid.Show();
+            lblplantilla.Show();
+            txtrecibedes.Show();
+            lblnomcolum.Show();
+            txtnomcolumn.Show();
+            lbltipodato.Show();
+            cbotipodato.Show();
+            lbllongitud.Show();
+            txtlongitud.Show();
+            btnagregar.Show();
+            dgAtributos.Show();
         }
     }
 

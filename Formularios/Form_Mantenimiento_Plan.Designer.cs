@@ -39,17 +39,18 @@ namespace Prueba_pdf.Formularios
             dgvListaPlantillas = new DataGridView();
             pnlmetadatos = new Panel();
             cbotipodato = new ComboBox();
-            label7 = new Label();
+            lbltipodato = new Label();
             lbllongitud = new Label();
             txtlongitud = new TextBox();
             txtnomcolumn = new TextBox();
             lblnomcolum = new Label();
-            label4 = new Label();
+            lblplantilla = new Label();
             txtrecibedes = new TextBox();
             txtrecibeid = new TextBox();
             btnagregar = new Button();
             sqlCommand1 = new Microsoft.Data.SqlClient.SqlCommand();
             dgAtributos = new DataGridView();
+            guna2Button1 = new Guna.UI2.WinForms.Guna2Button();
             ((System.ComponentModel.ISupportInitialize)dgvListaPlantillas).BeginInit();
             pnlmetadatos.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgAtributos).BeginInit();
@@ -126,12 +127,12 @@ namespace Prueba_pdf.Formularios
             // pnlmetadatos
             // 
             pnlmetadatos.Controls.Add(cbotipodato);
-            pnlmetadatos.Controls.Add(label7);
+            pnlmetadatos.Controls.Add(lbltipodato);
             pnlmetadatos.Controls.Add(lbllongitud);
             pnlmetadatos.Controls.Add(txtlongitud);
             pnlmetadatos.Controls.Add(txtnomcolumn);
             pnlmetadatos.Controls.Add(lblnomcolum);
-            pnlmetadatos.Controls.Add(label4);
+            pnlmetadatos.Controls.Add(lblplantilla);
             pnlmetadatos.Controls.Add(txtrecibedes);
             pnlmetadatos.Controls.Add(txtrecibeid);
             pnlmetadatos.Location = new Point(322, 53);
@@ -149,14 +150,14 @@ namespace Prueba_pdf.Formularios
             cbotipodato.Visible = false;
             cbotipodato.SelectedIndexChanged += cbotipodato_SelectedIndexChanged;
             // 
-            // label7
+            // lbltipodato
             // 
-            label7.AutoSize = true;
-            label7.Location = new Point(18, 166);
-            label7.Name = "label7";
-            label7.Size = new Size(73, 15);
-            label7.TabIndex = 7;
-            label7.Text = "Tipo de dato";
+            lbltipodato.AutoSize = true;
+            lbltipodato.Location = new Point(18, 166);
+            lbltipodato.Name = "lbltipodato";
+            lbltipodato.Size = new Size(73, 15);
+            lbltipodato.TabIndex = 7;
+            lbltipodato.Text = "Tipo de dato";
             // 
             // lbllongitud
             // 
@@ -192,14 +193,14 @@ namespace Prueba_pdf.Formularios
             lblnomcolum.TabIndex = 3;
             lblnomcolum.Text = "Nombre de columna";
             // 
-            // label4
+            // lblplantilla
             // 
-            label4.AutoSize = true;
-            label4.Location = new Point(15, 60);
-            label4.Name = "label4";
-            label4.Size = new Size(49, 15);
-            label4.TabIndex = 2;
-            label4.Text = "Plantilla";
+            lblplantilla.AutoSize = true;
+            lblplantilla.Location = new Point(15, 60);
+            lblplantilla.Name = "lblplantilla";
+            lblplantilla.Size = new Size(49, 15);
+            lblplantilla.TabIndex = 2;
+            lblplantilla.Text = "Plantilla";
             // 
             // txtrecibedes
             // 
@@ -242,11 +243,26 @@ namespace Prueba_pdf.Formularios
             dgAtributos.TabIndex = 10;
             dgAtributos.CellPainting += dgAtributos_CellPainting;
             // 
+            // guna2Button1
+            // 
+            guna2Button1.DisabledState.BorderColor = Color.DarkGray;
+            guna2Button1.DisabledState.CustomBorderColor = Color.DarkGray;
+            guna2Button1.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
+            guna2Button1.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
+            guna2Button1.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            guna2Button1.ForeColor = Color.White;
+            guna2Button1.Location = new Point(922, 258);
+            guna2Button1.Name = "guna2Button1";
+            guna2Button1.Size = new Size(180, 45);
+            guna2Button1.TabIndex = 11;
+            guna2Button1.Text = "guna2Button1";
+            // 
             // Form_Mantenimiento_Plan
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1290, 450);
+            Controls.Add(guna2Button1);
             Controls.Add(dgAtributos);
             Controls.Add(btnagregar);
             Controls.Add(pnlmetadatos);
@@ -279,15 +295,17 @@ namespace Prueba_pdf.Formularios
         private Panel pnlmetadatos;
         private TextBox txtrecibeid;
         private Button btnagregar;
-        private Label label4;
+        private Label lblplantilla;
         private TextBox txtrecibedes;
         private ComboBox cbotipodato;
-        private Label label7;
+        private Label lbltipodato;
         private Label lbllongitud;
         private TextBox txtlongitud;
         private TextBox txtnomcolumn;
         private Label lblnomcolum;
         private Microsoft.Data.SqlClient.SqlCommand sqlCommand1;
         private DataGridView dgAtributos;
+        private MaterialSkin.Controls.MaterialContextMenuStrip materialContextMenuStrip1;
+        private Guna.UI2.WinForms.Guna2Button guna2Button1;
     }
 }
